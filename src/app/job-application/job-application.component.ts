@@ -1,135 +1,120 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-job-application',
-  standalone: true,
+  // Se o seu projeto não usa standalone, remova as duas linhas abaixo e a linha 2 e 3
+  standalone: true, 
   imports: [CommonModule, ReactiveFormsModule],
+  
   templateUrl: './job-application.component.html',
-  styleUrls: ['./job-application.component.scss']
+  styleUrls: ['./job-application.component.scss'],
 })
-export class JobApplicationComponent {
-  form: FormGroup;
-  currentStep = 1;
-  showSummary = false;
+export class JobApplicationComponent implements OnInit {
+  form!: FormGroup;
+  currentStep: number = 1;
+  showSummary: boolean = false;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder) {}
+
+  ngOnInit(): void {
     this.form = this.fb.group({
       basic: this.fb.group({
+        // Seus campos aqui
         fullName: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         phone: ['', Validators.required],
       }),
       professional: this.fb.group({
+        // Seus campos aqui
         position: ['', Validators.required],
-        salaryExpectation: ['', [Validators.required, Validators.min(1)]],
+        salaryExpectation: ['', Validators.required],
         hasExperience: ['', Validators.required],
       }),
       address: this.fb.group({
+        // Seus campos aqui
         cep: ['', Validators.required],
         street: ['', Validators.required],
         city: ['', Validators.required],
-        uf: ['', [Validators.required, Validators.pattern(/^[A-Z]{2}$/)]],
+        uf: ['', Validators.required],
       }),
     });
+    
+    // Inicia com apenas o primeiro grupo habilitado
+    this.form.get('professional')?.disable();
+    this.form.get('address')?.disable();
   }
 
-  // Função auxiliar para obter o grupo de formulário com base na etapa (Melhoria de Clareza)
-  private getStepGroup(step: number): FormGroup {
-    switch (step) {
+  // Retorna o FormGroup da etapa atual
+  get currentGroup(): FormGroup {
+    switch (this.currentStep) {
       case 1:
-        return this.basic;
+        return this.form.get('basic') as FormGroup;
       case 2:
-        return this.professional;
+        return this.form.get('professional') as FormGroup;
       case 3:
-        return this.address;
+        return this.form.get('address') as FormGroup;
       default:
-        throw new Error(`Etapa ${step} inválida.`);
+        return this.form.get('basic') as FormGroup;
     }
   }
 
-  // Getters para os subgrupos
-  get basic() {
-    return this.form.get('basic') as FormGroup;
-  }
-  get professional() {
-    return this.form.get('professional') as FormGroup;
-  }
-  get address() {
-    return this.form.get('address') as FormGroup;
-  }
-
-  // Verifica erros em campos
-  hasError(group: FormGroup, controlName: string, errorType: string): boolean {
-    const control = group.get(controlName);
-    return !!(control && control.touched && control.hasError(errorType));
-  }
-
-  // Valida a etapa atual
-  isStepValid(step: number): boolean {
-    const group = this.getStepGroup(step);
-    // Marca todos os controles como 'touched' para exibir os erros
-    Object.values(group.controls).forEach(control => control.markAsTouched());
-    return group.valid;
-  }
-
-  // Desabilita etapa
-  disableStep(step: number) {
-    this.getStepGroup(step).disable();
-  }
-
-  // Reabilita etapa
-  enableStep(step: number) {
-    this.getStepGroup(step).enable();
-  }
-
-  // Próxima etapa
-  next() {
-    if (this.isStepValid(this.currentStep)) {
-      // 1. Desabilita o passo atual após validar
-      this.disableStep(this.currentStep);
+  // Navega para a próxima etapa, travando a etapa atual
+  nextStep(): void {
+    if (this.currentGroup.valid) {
+      // 1. Desabilita a etapa atual para 'travar' os dados (controle de estado)
+      this.currentGroup.disable();
       
       // 2. Avança para o próximo passo
       this.currentStep++;
       
-      // 3. Habilita o novo passo para edição (se ele estiver desabilitado)
-      if (this.currentStep <= 3) {
-        this.enableStep(this.currentStep);
+      // 3. Habilita a nova etapa 
+      const nextGroup = this.currentGroup;
+      if (nextGroup) {
+        nextGroup.enable();
       }
+    } else {
+      this.currentGroup.markAllAsTouched();
     }
   }
 
-  // Etapa anterior (Ajustado para reabilitar o formulário)
-  prev() {
+  // Volta para a etapa anterior, re-habilitando-a
+  prevStep(): void {
     if (this.currentStep > 1) {
-      // 1. Reabilita o passo atual para que, se o usuário avançar novamente, ele não perca os dados
-      this.enableStep(this.currentStep); 
+      // 1. Desabilita o passo atual antes de voltar
+      this.currentGroup.disable();
       
       // 2. Volta
       this.currentStep--;
       
-      // 3. Reabilita o passo que acabamos de voltar, caso estivesse desabilitado
-      this.enableStep(this.currentStep);
-    }
-  }
-  
-  // Submissão final (Ajustado para habilitar o formulário)
-  submitForm() {
-    if (this.form.valid) {
-      // CORREÇÃO CRUCIAL: Habilita todo o formulário antes de ler os valores
-      this.form.enable();
-      this.showSummary = true;
-    } else {
-      this.isStepValid(this.currentStep); // Mostra erros se a etapa final não estiver válida
+      // 3. Re-habilita o novo passo atual para permitir edição
+      this.currentGroup.enable();
     }
   }
 
-  // Volta do resumo para a primeira etapa
-  backToForm() {
-    this.showSummary = false; 
-    this.currentStep = 1;     
-    // Habilita o formulário caso ele tenha sido desabilitado pelo submit
-    this.form.enable();       
+  // Função final de submissão do formulário
+  submitForm(): void {
+    // A correção para o resumo vazio (image_7f8776.png) está aqui:
+    if (this.currentGroup.valid) {
+      // CORREÇÃO ESSENCIAL: Habilita o formulário INTEIRO para que o form.value não seja vazio
+      this.form.enable();
+      
+      // Mostra a tela de resumo
+      this.showSummary = true;
+      
+      console.log('Dados do Formulário Final:', this.form.value);
+    } else {
+      this.currentGroup.markAllAsTouched();
+    }
+  }
+
+  backToForm(): void {
+    this.showSummary = false;
+    // Opcional: Desabilita novamente as etapas anteriores após sair do resumo
+    this.form.get('basic')?.disable();
+    this.form.get('professional')?.disable();
+    // Habilita a última etapa para permitir edição
+    this.form.get('address')?.enable(); 
   }
 }
