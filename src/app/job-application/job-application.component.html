@@ -1,0 +1,127 @@
+<div class="form-card">
+  <h2>Formulário do Elias</h2>
+
+  <div class="steps">
+    <div class="step" [class.active]="currentStep === 1">1. Dados básicos</div>
+    <div class="step" [class.active]="currentStep === 2">2. Informações profissionais</div>
+    <div class="step" [class.active]="currentStep === 3">3. Endereço</div>
+  </div>
+
+  <form [formGroup]="form" novalidate *ngIf="!showSummary">
+    <div class="step-panel" *ngIf="currentStep >= 1">
+      <fieldset formGroupName="basic" [disabled]="basic.disabled">
+        <legend>Dados básicos</legend>
+
+        <label>
+          Nome completo*
+          <input formControlName="fullName" />
+          <small class="error" *ngIf="hasError(basic, 'fullName', 'required')">Campo obrigatório.</small>
+        </label>
+
+        <label>
+          E-mail*
+          <input formControlName="email" />
+          <small class="error" *ngIf="hasError(basic, 'email', 'required')">Campo obrigatório.</small>
+          <small class="error" *ngIf="hasError(basic, 'email', 'email')">E-mail inválido.</small>
+        </label>
+
+        <label>
+          Telefone*
+          <input formControlName="phone" />
+          <small class="error" *ngIf="hasError(basic, 'phone', 'required')">Campo obrigatório.</small>
+        </label>
+      </fieldset>
+    </div>
+
+    <div class="step-panel" *ngIf="currentStep >= 2">
+      <fieldset formGroupName="professional" [disabled]="professional.disabled">
+        <legend>Informações profissionais</legend>
+
+        <label>
+          Cargo pretendido*
+          <input formControlName="position" />
+          <small class="error" *ngIf="hasError(professional, 'position', 'required')">Campo obrigatório.</small>
+        </label>
+
+        <label>
+          Pretensão salarial*
+          <input type="number" formControlName="salaryExpectation" />
+          <small class="error" *ngIf="hasError(professional, 'salaryExpectation', 'required')">Campo obrigatório.</small>
+          <small class="error" *ngIf="hasError(professional, 'salaryExpectation', 'min')">Valor deve ser positivo.</small>
+        </label>
+
+        <fieldset class="radio-group">
+          <legend>Possui experiência na área?*</legend>
+          <label><input type="radio" value="sim" formControlName="hasExperience" /> Sim</label>
+          <label><input type="radio" value="nao" formControlName="hasExperience" /> Não</label>
+          <small class="error" *ngIf="hasError(professional, 'hasExperience', 'required')">Campo obrigatório.</small>
+        </fieldset>
+      </fieldset>
+    </div>
+
+    <div class="step-panel" *ngIf="currentStep === 3">
+      <fieldset formGroupName="address">
+        <legend>Endereço</legend>
+
+        <label>
+          CEP*
+          <input formControlName="cep" />
+          <small class="error" *ngIf="hasError(address, 'cep', 'required')">Campo obrigatório.</small>
+        </label>
+
+        <label>
+          Logradouro*
+          <input formControlName="street" />
+          <small class="error" *ngIf="hasError(address, 'street', 'required')">Campo obrigatório.</small>
+        </label>
+
+        <label>
+          Cidade*
+          <input formControlName="city" />
+          <small class="error" *ngIf="hasError(address, 'city', 'required')">Campo obrigatório.</small>
+        </label>
+
+        <label>
+          UF* (2 letras)
+          <input maxlength="2" formControlName="uf" />
+          <small class="error" *ngIf="hasError(address, 'uf', 'required')">Campo obrigatório.</small>
+          <small class="error" *ngIf="hasError(address, 'uf', 'pattern')">UF inválido.</small>
+        </label>
+      </fieldset>
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="prev()" *ngIf="currentStep > 1">← Voltar</button>
+      <button type="button" (click)="next()" *ngIf="currentStep < 3">Avançar →</button>
+      <button type="button" (click)="submitForm()" *ngIf="currentStep === 3">Enviar</button>
+    </div>
+  </form>
+
+  <div *ngIf="showSummary" class="summary">
+    <h3>Resumo da candidatura</h3>
+
+    <div class="summary-section">
+      <h4>Dados básicos</h4>
+      <p><strong>Nome:</strong> {{ form.value.basic.fullName }}</p>
+      <p><strong>E-mail:</strong> {{ form.value.basic.email }}</p>
+      <p><strong>Telefone:</strong> {{ form.value.basic.phone }}</p>
+    </div>
+
+    <div class="summary-section">
+      <h4>Informações profissionais</h4>
+      <p><strong>Cargo pretendido:</strong> {{ form.value.professional.position }}</p>
+      <p><strong>Pretensão salarial:</strong> R$ {{ form.value.professional.salaryExpectation }}</p>
+      <p><strong>Possui experiência:</strong> {{ form.value.professional.hasExperience | titlecase }}</p>
+    </div>
+
+    <div class="summary-section">
+      <h4>Endereço</h4>
+      <p><strong>CEP:</strong> {{ form.value.address.cep }}</p>
+      <p><strong>Logradouro:</strong> {{ form.value.address.street }}</p>
+      <p><strong>Cidade:</strong> {{ form.value.address.city }}</p>
+      <p><strong>UF:</strong> {{ form.value.address.uf }}</p>
+    </div>
+
+    <button type="button" (click)="backToForm()">Voltar ao formulário</button>
+  </div>
+</div>

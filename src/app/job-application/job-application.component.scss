@@ -1,0 +1,191 @@
+$form-width: 720px;
+
+.form-card {
+  width: 100%;
+  max-width: $form-width;
+  margin: 1.6rem auto;
+  padding: 1.6rem;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  background: #fff;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+
+  h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+  }
+
+  .steps {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap; // Garante que os passos não quebrem em telas pequenas
+
+    .step {
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      background: #f0f0f0;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      
+      &.active {
+        background: #222;
+        color: white;
+        opacity: 1;
+      }
+    }
+  }
+
+  form {
+    .step-panel {
+      fieldset {
+        border: 1px solid #ddd; 
+        padding: 1rem;
+        margin-bottom: 1.5rem; 
+
+        legend {
+          font-weight: bold;
+          font-size: 1.1rem;
+          padding: 0 0.5rem;
+          margin-left: -0.5rem; 
+        }
+
+        label {
+          display: flex; 
+          flex-direction: column; 
+          font-size: 0.95rem;
+          margin-bottom: 1rem; 
+
+          input[type="text"],
+          input[type="email"],
+          input[type="number"],
+          input:not([type="radio"]) { 
+            margin-top: 0.4rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 0.95rem;
+            width: 100%; 
+
+            &:disabled {
+              background: #f7f7f7;
+              color: #555;
+            }
+          }
+
+          .error {
+            color: #c53030;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+          }
+        }
+        
+        // Estilo específico para o grupo de radio buttons
+        fieldset.radio-group {
+          border: none; 
+          padding: 0;
+          margin: 1rem 0 0.5rem 0; 
+
+          legend {
+            font-weight: normal;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+          }
+
+          label { 
+            display: inline-flex; 
+            align-items: center;
+            margin-right: 1.5rem; 
+
+            input[type="radio"] {
+              margin-top: 0;
+              margin-right: 0.5rem;
+              width: auto; 
+            }
+          }
+        }
+      }
+
+      .actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.75rem;
+
+        button {
+          padding: 0.7rem 1.1rem;
+          border-radius: 6px;
+          border: none;
+          cursor: pointer;
+          font-size: 0.95rem;
+          transition: background-color 0.2s ease;
+          
+          &:last-child {
+            background: #222;
+            color: #fff;
+          }
+
+          &:first-child { // Estilo para o botão "Voltar"
+            background: #f0f0f0;
+            color: #222;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Estilos para o resumo
+.summary {
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 1.5rem; 
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1.2rem;
+    font-size: 1.3rem;
+    color: #333;
+  }
+
+  .summary-section {
+    margin-bottom: 1.5rem; 
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee; 
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    h4 {
+      margin-top: 0;
+      margin-bottom: 0.8rem;
+      color: #555;
+      font-size: 1.1rem;
+    }
+
+    p {
+      margin: 0.4rem 0;
+      font-size: 0.95rem;
+      strong {
+        color: #333;
+        display: inline-block;
+        min-width: 100px; // Ajuda a alinhar o texto
+      }
+    }
+  }
+
+  button {
+    margin-top: 1rem;
+    padding: 0.7rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    background: #222;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+}
